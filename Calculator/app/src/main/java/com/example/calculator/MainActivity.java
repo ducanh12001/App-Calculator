@@ -11,6 +11,7 @@ import android.widget.Toast;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         int curPos = display.getSelectionStart();
         String leftStr = oldStr.substring(0, curPos);
         String rightStr = oldStr.substring(curPos);
-        if(getString(R.string.display).equals(display.getText().toString())) {
+        if (getString(R.string.display).equals(display.getText().toString())) {
             display.setText(strToAdd);
             display.setSelection(curPos + 1);
         } else {
@@ -89,15 +90,18 @@ public class MainActivity extends AppCompatActivity {
     public void chiaBtn(View view) {
         updateText("/");
     }
-
     public void pointBtn(View view) {
         updateText(".");
+    }
+    public void openBtn(View view) {
+        updateText("(");
+    }
+    public void closeBtn(View view) {
+        updateText(")");
     }
 
     public void equalBtn(View view) {
         String str = display.getText().toString();
-        //str = str.replaceAll(":", "/");
-        //str = str.replaceAll("x", "*");
 
         ScriptEngine engine = new ScriptEngineManager().getEngineByName("rhino");
         Double result = null;
@@ -107,11 +111,19 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Invalid", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-
+        String finalResult = null;
         if (result != null) {
-            display.setText(String.valueOf(result));
-            display.setSelection(String.valueOf(result).length());
+            if (Math.ceil(result) != Math.floor(result)) {
+                finalResult = String.valueOf(result);
+            } else {
+                DecimalFormat kq = new DecimalFormat("#.#");
+                finalResult = kq.format(result);
+            }
+        } else {
+            finalResult = "Không hợp lệ";
         }
+        display.setText(finalResult);
+        display.setSelection(finalResult.length());
     }
     public void delBtn(View view) {
         int curPos = display.getSelectionStart();
